@@ -4,10 +4,19 @@ import {v4  as uuid} from "uuid"
 // file import 
 import HttpError from "../models/http-error.js";
 
-const DUMMY_DATA = [
+let DUMMY_DATA = [
     {
         id: "p1",
         title: "clock tower of lucknow",
+        description: "lucknow is a city in uttar pradesh",
+        image: "sw,d",
+        location: {
+            lat: 27.1753,
+            lng: 83.0093
+        }, creator: 'u1'
+    }, {
+        id: "p2",
+        title: "clock tower of lundon",
         description: "lucknow is a city in uttar pradesh",
         image: "sw,d",
         location: {
@@ -34,17 +43,17 @@ const getPlaceById = (req, res, next) => {
     })
     next();
 }
-// get  Place By User Id by Id method //
-const getPlaceByUserId = (req, res, next) => {
+// get  Places By User Id by Id method //
+const getPlacesByUserId = (req, res, next) => {
     const uid = req.params.uid;
-    const user = DUMMY_DATA.find(u => {
-        return u.creator === uid;
+    const places = DUMMY_DATA.filter(p => {
+        return p.creator === uid;
     })
-    if (!user) {
-        return next(new HttpError("place  not found for provided user id", 404));
+    if (!places||places.length===0) {
+        return next(new HttpError("places are  not found for provided user id", 404));
     }
     res.json({
-        user,
+        places,
         success: true
     });
     next();
@@ -67,12 +76,43 @@ res.status(201).json({
     place:createdPlace,
     success: true
 })
-next();
+// next();
+}
+//update place by id
+const updatePlaceById=(req,res,next)=>{
+    const pid=req.params.pid;
+    const {title,description}=req.body;
+    const updatedPlace={...DUMMY_DATA.find(p=>p.id===pid)};
+    const placeIndex=DUMMY_DATA.findIndex(p=>p.id===pid);
+    updatedPlace.title=title;
+    updatedPlace.description=description;
+    DUMMY_DATA[placeIndex]=updatedPlace;
+    res.status(200).json({
+        message: 'place updated successfully',
+        place:updatedPlace,
+        success:true
+    })
+    next();
+
+}
+//delete place by id
+const deletePlaceById=(req,res,next)=>{
+    const pid=req.params.pid;
+    DUMMY_DATA=DUMMY_DATA.filter(p=>p.id!==pid);
+    res.status(200).json({
+        message: 'place deleted successfully',
+        success:true,
+        DUMMY_DATA
+    })
+    // next();
+
 }
 // export the functions //
 export {
     getPlaceById,
-    getPlaceByUserId,
-    createPlace
+    getPlacesByUserId,
+    createPlace,
+    updatePlaceById,
+    deletePlaceById
 
 }
