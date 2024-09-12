@@ -1,10 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import "dotenv/config";
 
 
 // fies import 
-import placesRoutes from "./routes/places-route.js"
-import userRoutes from "./routes/users-route.js"
+import placesRoutes from "./routes/places-route.js";
+import userRoutes from "./routes/users-route.js";
 import HttpError from "./models/http-error.js";
 
 // variables 
@@ -31,7 +33,11 @@ app.use((error, req, res, next) => {
     res.json({ message: error.message || "An unknown error occured!" })
 });
 
-app.listen(port, () => {
-    console.log(`server is running on port ${port}`)
-
+mongoose.connect(process.env.MONGO_URI).then(()=>{
+    app.listen(port, () => {
+        console.log(`server is running on port ${port}`);
+    
+    })
+}).catch(()=>{
+    console.log("server get offline" );
 })
