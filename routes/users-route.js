@@ -1,10 +1,15 @@
 import express from "express";
 import { check } from "express-validator";
 import {
-    getUsers,
+     getUsers,
     login,
-    signup
-} from "../controllers/users-controller.js";
+    signup,
+ } from "../controllers/userController.js";
+// import {
+//     getUsers,
+//     login,
+//     signup
+// } from "../controllers/users-controller.js";
 const router = express.Router();
 
 router.get("/", getUsers);

@@ -103,6 +103,18 @@ export const updatePlaceById = async (req, res, next) => {
 
     })
 }
-// export deletePlaceById=async(req,res,next)=>{
-
-// }
+export const deletePlaceById=async(req,res,next)=>{
+const pid=req.params.pid;
+let deletedPlace;
+try {
+     deletedPlace=await PlaceModel.findByIdAndDelete(pid);
+} catch (error) {
+    return next(new HttpError(`${error}`, 500));
+}
+if (!deletedPlace) {
+    return next(new HttpError(`could not find place for provided place id ${pid} `,404));
+}
+return res.status(200).json({
+    message: "place deleted",
+});
+}

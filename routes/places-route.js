@@ -7,6 +7,7 @@ import {
     getPlaceById ,
     getPlacesByUserId,
     updatePlaceById,
+    deletePlaceById
 } from "../controllers/placeController.js";
 // import files 
 // import {
@@ -36,6 +37,6 @@ router.patch(
         check('description').isLength({ min: 5 }),
 
     ], updatePlaceById)
-// router.delete("/:pid", deletePlaceById)
+router.delete("/:pid", deletePlaceById);
 // export router 
 export default router;
