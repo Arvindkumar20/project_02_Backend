@@ -1,10 +1,11 @@
 import express from "express";
 import { check } from "express-validator";
 import {
-     getUsers,
+    getUsers,
     login,
     signup,
- } from "../controllers/userController.js";
+    deleteUser
+} from "../controllers/userController.js";
 // import {
 //     getUsers,
 //     login,
@@ -21,4 +22,5 @@ router.post(
     ],
     signup);
 router.post("/login", login);
+router.delete("/:uid", deleteUser);
 export default router;

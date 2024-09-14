@@ -2,9 +2,9 @@
 import express from "express";
 import { check } from "express-validator";
 // import { createPlace } from "../controllers/place.controller.js";
-import { 
+import {
     createPlace,
-    getPlaceById ,
+    getPlaceById,
     getPlacesByUserId,
     updatePlaceById,
     deletePlaceById

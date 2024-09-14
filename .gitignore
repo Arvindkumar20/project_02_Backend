@@ -3,6 +3,7 @@
 .server.js
 .server2.js
 /server
+.env
 # dependencies
 /node_modules
 /.pnp
