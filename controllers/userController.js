@@ -13,13 +13,13 @@ export const getUsers = async (req, res, next) => {
         const err = new HttpError(error, 500);
         return next(err);
     }
-    if (!users || users.length <= 0) {
+    if (!users || users.length === 0) {
         const err = new HttpError("No users found", 404);
         return next(err);
     }
     return res.status(200).json({
-        users: users.map(user => user.toObject()),
-        message: "users get"
+        users: users,
+        // message: "users get"
     })
 }
 
@@ -56,7 +56,7 @@ export const signup = async (req, res, next) => {
         return next(err)
     }
     return res.status(201).json({
-        user: user,
+        user: createdUesr,
         message: "user created"
 
     })
