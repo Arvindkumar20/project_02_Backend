@@ -6,9 +6,9 @@ const placeSchema = new mongoose.Schema({
         lat: { type: Number,required:true},
         lng: { type: Number,required:true }
     },
-    image: { type: String, required: true },
-    address: { type: String, required: true },
-    creator: { type: mongoose.Schema.Types.ObjectId,ref:"User", required: true }
+    image: { type: String,  },
+    address: { type: String, },
+    creator: { type: mongoose.Schema.Types.ObjectId,ref:"User", }
 },
 {
     timestamps:true

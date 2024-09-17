@@ -22,7 +22,7 @@ const router = express.Router();
 router.get("/:pid", getPlaceById);
 router.get("/user/:uid", getPlacesByUserId);
 router.post(
-    "/",
+    "/new",
     [
         check('title').not().isEmpty(),
         check('description').isLength({ min: 5 }),

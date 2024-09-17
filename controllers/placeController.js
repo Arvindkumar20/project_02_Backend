@@ -12,7 +12,7 @@ export const createPlace = async (req, res, next) => {
     if (!error.isEmpty()) {
         return next(new HttpError("invalid inputs", 422));
     }
-    const { title, description, address, image, creator } = req.body;
+    const { title, description, address, creator } = req.body;
     let coordinates;
     try {
         coordinates = await getCoordesForAddress(address);
@@ -23,7 +23,7 @@ export const createPlace = async (req, res, next) => {
         title,
         description,
         location: coordinates,
-        image: image,
+        // image: image,
         creator,
         address,
     })
