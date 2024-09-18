@@ -9,6 +9,7 @@ import {
     updatePlaceById,
     deletePlaceById
 } from "../controllers/placeController.js";
+import { fileUpload } from "../middlewares/file-upload.js";
 // import files 
 // import {
 //     createPlace,
@@ -23,6 +24,7 @@ router.get("/:pid", getPlaceById);
 router.get("/user/:uid", getPlacesByUserId);
 router.post(
     "/new",
+    fileUpload.single('image'),
     [
         check('title').not().isEmpty(),
         check('description').isLength({ min: 5 }),

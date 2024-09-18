@@ -1,10 +1,11 @@
 import { validationResult } from "express-validator";
-
+import fs from 'fs';
 import HttpError from "../models/http-error.js";
 import { PlaceModel } from "../models/place-model.js";
 import getCoordesForAddress from "../util/location.js";
 import { User } from "../models/user-model.js";
 import mongoose from "mongoose";
+// import fileUpload from '../middlewares/file-upload.js';
 
 export const createPlace = async (req, res, next) => {
     const error = validationResult(req);
@@ -23,7 +24,7 @@ export const createPlace = async (req, res, next) => {
         title,
         description,
         location: coordinates,
-        // image: image,
+        image:req.file.path,
         creator,
         address,
     })
@@ -75,25 +76,29 @@ export const getPlaceById = async (req, res, next) => {
 }
 
 export const getPlacesByUserId = async (req, res, next) => {
-    const creator = req.params.uid;
+    const uid = req.params.uid;
+  
     // let places;
     let userWithPlaces;
     try {
-        userWithPlaces = await User.findById(creator).populate('places');
-    } catch (error) {
-        return next(new HttpError(`could not find place for provided user id ${error} `, 500));
+      userWithPlaces = await User.findById(uid).populate('places');
+    } catch (err) {
+      const error = new HttpError(
+        'Fetching places failed, please try again later.',
+        500
+      );
+      return next(error);
     }
-    if (!userWithPlaces) {
-        return next(new HttpError(`could not find place for provided user id ${uid} `, 404));
-
+  
+    // if (!places || places.length === 0) {
+    if (!userWithPlaces || userWithPlaces.places.length === 0) {
+      return next(
+        new HttpError('Could not find places for the provided user id.', 404)
+      );
     }
-    return res.json({
-        message: "places found",
-        places: userWithPlaces.places.map((place) => place.toObject({ getters: true }))
-
-    })
-
-}
+  
+    res.json({ places: userWithPlaces.places.map(place => place.toObject({ getters: true })) });
+  };
 
 export const updatePlaceById = async (req, res, next) => {
     const errors = validationResult(req);
@@ -138,6 +143,7 @@ export const deletePlaceById = async (req, res, next) => {
         return next(new HttpError(`could not find place for provided place id `,
             404));
     }
+    const imagePath=place.image;
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
@@ -155,6 +161,9 @@ export const deletePlaceById = async (req, res, next) => {
     if (!place) {
         return next(new HttpError(`could not find place for provided place id ${pid} `, 404));
     }
+    fs.unlink(imagePath,(err)=>{
+        console.log(err)
+    });
     return res.status(200).json({
         message: "place deleted",
     });

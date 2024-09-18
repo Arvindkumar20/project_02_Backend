@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
-// import bcrypt from "bcryptjs";
-// import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import "dotenv/config";
 import HttpError from "../models/http-error.js"
 import { User } from "../models/user-model.js";
@@ -28,7 +28,7 @@ export const signup = async (req, res, next) => {
     if (!error.isEmpty()) {
         return next(new HttpError(error.array()[0].msg, 400));
     }
-    const { name, email, password, address, image } = req.body;
+    const { name, email, password, address } = req.body;
     let user;
     try {
         user = await User.findOne({ email: email });
@@ -40,13 +40,20 @@ export const signup = async (req, res, next) => {
         const error = new HttpError("user already exist please login", 422);
         return next(error);
     }
-    // const hashedPassword=await bcrypt.hash(password,10);/
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(password, 12);
+
+    } catch (error) {
+        const err = new HttpError("error due to pass hashing " + error, 500);
+        return next(err);
+    }
     const createdUesr = new User({
         name: name,
         email: email,
-        password: password,
+        password: hashedPassword,
         address: address,
-        image: image,
+        image: req.file.path,
         places: []
     });
     try {
@@ -55,11 +62,20 @@ export const signup = async (req, res, next) => {
         const err = new HttpError("singing up failed  " + error, 500);
         return next(err)
     }
-    return res.status(201).json({
-        user: createdUesr,
-        message: "user created"
+    // let token;
+    // try {
+    //     token = jwt.sign({ userId: createdUesr.id, email: createdUesr.email }, process.env.SECRET_KEY, { expiresIn: '1d' });
+    // } catch (error) {
+    //     return next(new HttpError("error due to cookieing " + error, 500))
+    // }
+    // return res.status(201).json({
+    //     userId: createdUesr.id,
+    //     email: createdUesr.email,
+    //     token: token,
+    //     message: "user created"
 
-    })
+    // })
+    res.status(201).json({user:createdUesr, message: "user created" });
 }
 
 export const login = async (req, res, next) => {
@@ -79,23 +95,37 @@ export const login = async (req, res, next) => {
         return next(error);
 
     }
-    // const matchPassword=bcrypt.compare(password,user.password);
-    // if(!matchPassword){
-    //     return next(new HttpError("wrong password or email please try again",401));
+    let matchPassword;
+    try {
+        matchPassword = await bcrypt.compare(password, user.password);
+    } catch (error) {
+        const err = new HttpError('error maching password ' + error, 500);
+        return next(err);
+    }
+    if (!matchPassword) {
+        return next(new HttpError("wrong password or email please try again", 401));
+    }
+    // let token;
+    // try {
+    //     token = jwt.sign({ userId: user._id, email: user.email }, process.env.SECRET_KEY, {
+    //         expiresIn: "1d",
+    //     });
+    // } catch (error) {
+    //     return next(new HttpError('errordue to generating token ' + error, 500));
     // }
-    // const token=jwt.sign({userId:user._id},process.env.SECRET_KEY,{
-    //     expiresIn:"1d",
-    // });
-    // return res.cookie("token",token,{
-    //     httpOnly:true,
-    //     sameSite:'strict',
-    //     maxAge:24*60*60*1000          
+    // return res.cookie("token", token, {
+    //     httpOnly: true,
+    //     sameSite: 'strict',
+    //     maxAge: 24 * 60 * 60 * 1000
     // })
     return res.json({
-        user: user,
+        user:user,
+        // userId: user._id,
+        // email:user.email,
+        // token: token,
         message: `Welcome back ${user.name}`
 
-    })
+    });
 
 }
 // export const logout=async(req,res,next)=>{

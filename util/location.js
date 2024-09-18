@@ -5,8 +5,8 @@
 async function getCoordesForAddress(address) {
 
         return {
-                lat: 40.7128,
-                lng: -74.0060
+                lat: 26.874018,
+                lng: 80.9055076
         }
 
 
