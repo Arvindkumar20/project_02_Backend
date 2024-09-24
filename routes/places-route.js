@@ -10,6 +10,7 @@ import {
     deletePlaceById
 } from "../controllers/placeController.js";
 import { fileUpload } from "../middlewares/file-upload.js";
+import { checkAuth } from "../middlewares/check-auth.js";
 // import files 
 // import {
 //     createPlace,
@@ -22,6 +23,7 @@ const router = express.Router();
 // define routes
 router.get("/:pid", getPlaceById);
 router.get("/user/:uid", getPlacesByUserId);
+router.use(checkAuth);
 router.post(
     "/new",
     fileUpload.single('image'),

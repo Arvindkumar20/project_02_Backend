@@ -59,23 +59,24 @@ export const signup = async (req, res, next) => {
     try {
         await createdUesr.save();
     } catch (error) {
-        const err = new HttpError("singing up failed  " + error, 500);
+        const err = new HttpError("sing up failed  " + error, 500);
         return next(err)
     }
-    // let token;
-    // try {
-    //     token = jwt.sign({ userId: createdUesr.id, email: createdUesr.email }, process.env.SECRET_KEY, { expiresIn: '1d' });
-    // } catch (error) {
-    //     return next(new HttpError("error due to cookieing " + error, 500))
-    // }
-    // return res.status(201).json({
-    //     userId: createdUesr.id,
-    //     email: createdUesr.email,
-    //     token: token,
-    //     message: "user created"
+    let token;
+    try {
+        token = jwt.sign({ userId: createdUesr.id, email: createdUesr.email }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    } catch (error) {
+        return next(new HttpError("error due to cookie  " + error, 500))
+    }
+    return res.status(201).json({
+        // user:createdUesr,
+        userId: createdUesr.id,
+        email: createdUesr.email,
+        token: token,
+        message: "user created"
 
-    // })
-    res.status(201).json({user:createdUesr, message: "user created" });
+    });
+    // res.status(201).json({user:createdUesr, message: "user created" });
 }
 
 export const login = async (req, res, next) => {
@@ -90,8 +91,8 @@ export const login = async (req, res, next) => {
     } catch (error) {
         return next(new HttpError(error, 500));
     }
-    if (!user || user.password !== password) {
-        const error = new HttpError("can't login please check email or password first then try", 500);
+    if (!user) {
+        const error = new HttpError("can't login please check email  ", 500);
         return next(error);
 
     }
@@ -103,26 +104,26 @@ export const login = async (req, res, next) => {
         return next(err);
     }
     if (!matchPassword) {
-        return next(new HttpError("wrong password or email please try again", 401));
+        return next(new HttpError("wrong password or email please try again", 403));
     }
-    // let token;
-    // try {
-    //     token = jwt.sign({ userId: user._id, email: user.email }, process.env.SECRET_KEY, {
-    //         expiresIn: "1d",
-    //     });
-    // } catch (error) {
-    //     return next(new HttpError('errordue to generating token ' + error, 500));
-    // }
+    let token;
+    try {
+        token = jwt.sign({ userId: user.id, email: user.email }, process.env.SECRET_KEY, {
+            expiresIn: "1h",
+        });
+    } catch (error) {
+        return next(new HttpError('errordue to generating token ' + error, 500));
+    }
     // return res.cookie("token", token, {
     //     httpOnly: true,
     //     sameSite: 'strict',
     //     maxAge: 24 * 60 * 60 * 1000
     // })
     return res.json({
-        user:user,
-        // userId: user._id,
-        // email:user.email,
-        // token: token,
+        // user:user,
+        userId: user.id,
+        email:user.email,
+        token: token,
         message: `Welcome back ${user.name}`
 
     });
