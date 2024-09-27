@@ -5,11 +5,15 @@ import mongoose from "mongoose";
 import path from "path";
 import "dotenv/config"
 // import cors from "cors";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // fies import 
 import placesRoutes from "./routes/places-route.js";
 import userRoutes from "./routes/users-route.js";
-// import HttpError from "./models/http-error.js";
 
 // variables 
 const port = process.env.PORT||4000;
@@ -31,12 +35,10 @@ app.use(express.static(path.join('public')));
 // routes
 app.use("/api/places", placesRoutes);
 app.use("/api/users", userRoutes);
-// app.use(express.static(path.join('public')));
 
-app.use((req,res,next)=>{
+app.use((req,res)=>{
     res.sendFile(path.resolve(__dirname,'public','index.html'));
-//     const error=new HttpError("Could not find this route",404);
-// throw error;
+
 });
 app.use((error, req, res, next) => {
     if(req.file){
