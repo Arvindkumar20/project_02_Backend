@@ -36,7 +36,7 @@ app.use(express.static(path.join('public')));
 app.use("/api/places", placesRoutes);
 app.use("/api/users", userRoutes);
 
-app.use((req,res)=>{
+app.get('/api',(req,res)=>{
     res.sendFile(path.resolve(__dirname,'public','index.html'));
 
 });

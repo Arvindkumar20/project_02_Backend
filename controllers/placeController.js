@@ -32,7 +32,7 @@ export const createPlace = async (req, res, next) => {
         user = await User.findById(req.userData.userId);
 
     } catch (error) {
-        const err = new HttpError(error, 500);
+        const err = new HttpError("error" +error, 500);
         return next(err);
     }
     if (!user) {
@@ -51,7 +51,7 @@ export const createPlace = async (req, res, next) => {
         const error = new HttpError(`could not created place ${err}`, 500);
         return next(error);
     }
-    res.json({
+    return res.status(201).json({
         message: "created place successfully",
         createdPlace
     })
